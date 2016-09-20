@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :page do
-    url "MyString"
+    url "http://example.com"
   end
 end

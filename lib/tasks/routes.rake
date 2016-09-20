@@ -6,7 +6,8 @@ namespace :api do
       API.routes.each do |api|
         method = api.request_method.ljust(10)
         path = api.path.gsub(":version", api.version)
-        puts "     #{method} #{path}"
+        desc = api.description
+        puts "     #{method} #{path}  ----  #{desc}"
       end
 
     #end

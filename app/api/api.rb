@@ -19,6 +19,11 @@ class API < Grape::API
     error!('Invalid url.', 400)
   end
 
+  # Rescue from inexistent records.
+  rescue_from ActiveRecord::RecordNotFound do
+    rack_response({ 'message' => '404 Not found' }.to_json, 404)
+  end
+
 
   resource :pages do
     desc 'Return a list of Pages.'
@@ -38,8 +43,8 @@ class API < Grape::API
           optional :name, type: String, desc: 'Tag name to filter.'
         end
         get do
-          if params[:name]
-            Page.find(params[:id]).tags.where(name: params[:name])
+          if params[:name].present?
+            Page.find(params[:id]).tags.where(name: Tag.names[params[:name]])
           else
             Page.find(params[:id]).tags
           end
@@ -50,7 +55,7 @@ class API < Grape::API
 
     end
 
-    desc 'Receive an url and indexes the contents.'
+    desc 'Receive an url and index its contents.'
     params do
       requires :url, type: String, desc: 'url to be parsed.'
     end
@@ -64,7 +69,7 @@ class API < Grape::API
       get_tags('a')
 
       @page.save
-      @page
+      present @page
     end
 
   end
